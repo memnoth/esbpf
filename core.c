@@ -284,13 +284,15 @@ load_b:
     case BPF_S_STX:
       mem[K] = X;
       continue;
-#if 0
     case BPF_S_ANC_PROTOCOL:
+      /* 'protocol' has a value such as ETH_P_802_3 */
       A = ntohs(skb->protocol);
       continue;
     case BPF_S_ANC_PKTTYPE:
+      /* 'pkt_type' has a value such as PACKET_BROADCAST */
       A = skb->pkt_type;
       continue;
+#if 0
     case BPF_S_ANC_IFINDEX:
       if (!skb->dev)
         return 0;
@@ -302,11 +304,14 @@ load_b:
     case BPF_S_ANC_QUEUE:
       A = skb->queue_mapping;
       continue;
+#endif
     case BPF_S_ANC_HATYPE:
       if (!skb->dev)
         return 0;
+      /* 'type' has a value such as ARPHRD_ETHER */
       A = skb->dev->type;
       continue;
+#if 0
     case BPF_S_ANC_RXHASH:
       A = skb->rxhash;
       continue;
