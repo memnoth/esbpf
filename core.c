@@ -292,15 +292,26 @@ load_b:
       /* 'pkt_type' has a value such as PACKET_BROADCAST */
       A = skb->pkt_type;
       continue;
-#if 0
     case BPF_S_ANC_IFINDEX:
+      /* This might be used for below arch.
+       *
+       *  .------------------.
+       *  |  network driver  |
+       *  '------------------'
+       *           |
+       *  .-----.------.-----.
+       *  |     |      |     |
+       * eth0  eth1   eth2  eth3
+       */
       if (!skb->dev)
         return 0;
       A = skb->dev->ifindex;
       continue;
     case BPF_S_ANC_MARK:
+      /* TODO what it should be used for? */
       A = skb->mark;
       continue;
+#if 0
     case BPF_S_ANC_QUEUE:
       A = skb->queue_mapping;
       continue;
@@ -311,21 +322,8 @@ load_b:
       /* 'type' has a value such as ARPHRD_ETHER */
       A = skb->dev->type;
       continue;
-#if 0
-    case BPF_S_ANC_RXHASH:
-      A = skb->rxhash;
-      continue;
     case BPF_S_ANC_CPU:
       A = raw_smp_processor_id();
-      continue;
-    case BPF_S_ANC_VLAN_TAG:
-      A = vlan_tx_tag_get(skb);
-      continue;
-    case BPF_S_ANC_VLAN_TAG_PRESENT:
-      A = !!vlan_tx_tag_present(skb);
-      continue;
-    case BPF_S_ANC_PAY_OFFSET:
-      A = __skb_get_poff(skb);
       continue;
     case BPF_S_ANC_NLATTR:
       {
@@ -368,7 +366,6 @@ load_b:
           A = 0;
         continue;
       }
-#endif
     default:
       WARN_RATELIMIT(1, "Unknown code:%u jt:%u tf:%u k:%u\n",
           fentry->code, fentry->jt,
